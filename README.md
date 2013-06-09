@@ -6,28 +6,7 @@ JEnglish is a simple English Programming Language, which allows you to create we
 
 Simple Example:
 ---------------
-<!--
-<html>
-<head>
-<title>JEnglish Demo</title>
-<script type='text/javascript' src="jenglish.org"></script>
-</head>
-<body>
-	<div id="center"> <!-- required to be here -->
-		<script type='text/javascript'>
-			<!-- commands to create the web page go here -->
-			command("create a box named boxHolder");
-			command("put This is boxHolder into boxHolder");
-			command("move boxHolder to the right 100 and down 100");
-			command("make boxHolder font Tahoma, sans-serif");
-			command("make boxHolder color green");
-		</script>
-	</div>
-</body>
-</html>
-
--->
-
+See simple.html
 
 Reserved Words:
 ---------------
