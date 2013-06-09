@@ -6,7 +6,7 @@ JEnglish is a simple English Programming Language, which allows you to create we
 
 Simple Example:
 ---------------
-
+<!--
 <html>
 <head>
 <title>JEnglish Demo</title>
@@ -26,7 +26,7 @@ Simple Example:
 </body>
 </html>
 
-
+-->
 
 
 Reserved Words:
