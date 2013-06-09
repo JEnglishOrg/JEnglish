@@ -20,8 +20,6 @@ var CREATE_BLUR_CMDS = new Array("blur");
 var CREATE_UL_CMDS = new Array("ul","bullet","bulletlist","unorderedlist");
 var CREATE_OL_CMDS = new Array("ol","numberlist","orderedList");
 var CREATE_SLIDESHOW_CMDS = new Array("slideshow");
-var CREATE_CONTACT_FORM_CMDS = new Array("contact", "contactus", "contactForm");
-var CREATE_TABLE_CMDS = new Array("table","database","db");//note: to the user database == table. we know better =D
 var CREATE_MENU_CMDS = new Array("menu","menubar","menuBar","navbar","navBar","navigationbar","navigationBar");
 var CREATE_MENU_DROP_DOWN_CMDS = new Array("drop-down","dropdown","submenu","hovermenu","hover-menu");
 var CREATE_VERT_BAR_CMDS = new Array("verticalBar","vertBar","vBar","vbar");
