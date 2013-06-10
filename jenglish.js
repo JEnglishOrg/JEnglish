@@ -1,3 +1,23 @@
+/*
+JEnglish from JEnglish.Org (Github Username: JEnglishOrg)
+
+JEnglish is an English-like language to design and build web pages in.
+
+
+This version of JEnglish includes the base and the following add-ons:
+    - drop-down box
+    - menu / navigation bar
+    - drop-down menu
+    - slideshow
+    - powerpoint-like presentation for slides
+    - vertical bar
+    - horizontal bar
+    - ajax calls
+    - on click handlers
+    - blur ( fullscreen div for use as a semi-transparent background )
+    - embedding youtube video
+*/
+
 /*	SWFObject v2.2 <http://code.google.com/p/swfobject/> 
 	is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 */
@@ -24,7 +44,7 @@ var CREATE_MENU_CMDS = new Array("menu","menubar","menuBar","navbar","navBar","n
 var CREATE_MENU_DROP_DOWN_CMDS = new Array("drop-down","dropdown","submenu","hovermenu","hover-menu");
 var CREATE_VERT_BAR_CMDS = new Array("verticalBar","vertBar","vBar","vbar");
 var CREATE_HORZ_BAR_CMDS = new Array("horizontalBar","horzBar","hBar","hbar","bar");
-var AJAX_CMDS   = new Array("async",'ajax','asynchronously');
+var AJAX_CMDS   = new Array("async","ajax","asynchronously");
 var APPEND_ELEM_CMDS = new Array("append-elem");
 var ATTR_CMDS   = new Array("make","set");
 var DELETE_CMDS = new Array("remove","delete","rm");
@@ -32,11 +52,26 @@ var EMBED_CMDS  = new Array("embed");
 var EMBED_SUB_CMDS = new Array("youtube","video");
 var INSERT_CMDS = new Array("put","insert");
 var APPEND_INSERT_CMDS = new Array("append");
-var MOVE_CMDS   = new Array("move","shift","mymove"); 
+var MOVE_CMDS   = new Array("move","shift"); 
 var PREPEND_CMDS = new Array("prepend");
 var RENAME_CMDS = new Array("rename");
-var USE_CMDS = new Array("use", "using");
+var USE_CMDS = new Array("use","using");
 var WHEN_CMDS = new Array("when");
+// needed for extension add-on: create drop down box
+var CREATE_DROP_DOWN_CMDS = new Array("dropdownbox", "dropDownBox");  
+
+// main workhorse function of the command function. searches cmdArray for aArrElem, and if found called func
+function searchCommandsFor( aArrElem, cmdArray, func )
+{
+    for( var index = 0; index < cmdArray.length; ++index )
+    {
+        if( cmdArray[index] == aArrElem)
+        {
+            return func();
+        }
+    }
+    return false;
+}
 
 
 // interpreter command for parsing and executing JEnglish Commands
@@ -135,38 +170,6 @@ function command(x) {
 	});
 	if( retVal2 == true ) { return true; }
 
-	// create contactForm ? formName ? fields field1[, field2]+  mailTo emailToSend 
-	retVal2 = searchCommandsFor( arrElem, CREATE_CONTACT_FORM_CMDS, function() 
-	{
-		var formName = arr[i+3];
-		var fieldsIndex = x.indexOf("fields");
-		if( fieldsIndex == -1 )
-		{
-			record('<span style="color:red">ERROR PARSING contactForm COMMAND</span>');
-			return false;
-		}
-		
-		var fields = x.substring(fieldsIndex+6);
-
-		var fieldsToIncludeArr = new Array();
-		var fieldArr = fields.split(',');
-		for( var ii = 0; ii < fieldArr.length; ++ii )
-		{
-			var andIndex = fieldArr[ii].indexOf("and");
-			var fieldTitle = fieldArr[ii].trim();
-			if( andIndex != -1 )
-			{
-				fieldTitle = fieldTitle.substring( andIndex+3 ).trim();
-			}
-			fieldsToIncludeArr.push(fieldTitle);
-
-		}
-
-		record('making contact form named <span style="color:red">'+formName+'</span>');
-		return createContactForm(formName, fieldsToIncludeArr);
-
-	});
-	if( retVal2 == true ) { return true; }
 
 
 	retVal2 = searchCommandsFor( arrElem, CREATE_UL_CMDS, function()
@@ -223,35 +226,6 @@ function command(x) {
 
 	});
 	if( retVal2 == true ){ return true; }
-
-
-        // Check for Create Table/DB; eg: create table named poop <--- this gets created under domain.tld database, and is always just a table
-        retVal2 = searchCommandsFor( arrElem, CREATE_TABLE_CMDS, function()
-        {
-            // fields='id, name, price, quantity';
-            tableName = arr[j+1];
-            var fields = '';
-            for( var yy = j+4; yy<arr.length; ++yy)
-            { 
-                var tmp = arr[yy];
-                if( tmp=="and"){
-                    continue;
-                }
-                tmp = tmp.replace(',','');
-                fields += tmp + ",";  
-            }
-            // grab domain from SESSION data from LOGIN
-            if( createtable(tableName,fields,'loxsy.com') ) 
-            {
-                record("table <span style='color:red'>"+arr[j+1]+"</span> was created with fields:<span style='color:red'>"+fields+"</span>");
-            }
-            else
-            {
-                record("<span style='color:red'>ERROR: CREATING YOUR TABLE!</span>");
-            }
-            return true;
-        });
-        if( retVal2 == true ){return true;}
 
         // Check for Create Menu/NavBar; eg: create menu X <menuName> X titles <MenuTitles>
         retVal2 = searchCommandsFor(arrElem, CREATE_MENU_CMDS, function()
@@ -348,6 +322,36 @@ function command(x) {
         });
         if(retVal2==true){return true;}
   
+	// create dropdownbox ? <dropDownId> ? titles Title1; Title2; and Title3
+        retVal2 = searchCommandsFor(arrElem, CREATE_DROP_DOWN_CMDS, function()
+        {
+            var dropDownName = arr[3];
+
+            var titlesIndex = x.indexOf("titles");
+            if( titlesIndex == -1 )
+            {
+                record("ERROR PARSING DROP DOWN BOX CMD");
+                return false;
+            }
+            // parse titles of drop down elements
+            var titles = x.substring( titlesIndex+6 ).trim();
+            var titleNames = titles.split(";");
+            var titlesArr = new Array();
+            for( var ii = 0; ii < titleNames.length; ++ii )
+            {
+                if( titleNames[ii].indexOf("and") != -1 )
+                {
+                    titleNames[ii] = titleNames[ii].substring( titleNames[ii].indexOf("and") + 3 ).trim();
+                }
+                titlesArr.push( titleNames[ii] );
+            }
+            createDropDownBox( dropDownName, titlesArr );
+            record("Drop Down Box called <span style='color:red'>"+dropDownName+"</span> created");
+            return true;
+        });
+        if(retVal2==true){return true;}
+
+
 	if( arr[i+2] == "image" || arr[i+2] == "img" )
 	{
 		createimg( arr[i+4], '');
@@ -410,8 +414,8 @@ function command(x) {
 	}
         
 
-    });
-    if(retVal){return true;}
+    }); // end of command: CREATE
+    if(retVal){return true;}   
 
     // Check for Move. move elemName ? ? ? leftPx ? ? downPx
     retVal = searchCommandsFor( arrElem, MOVE_CMDS, function()
@@ -1487,20 +1491,24 @@ function createBlur( blurId )
 	document.body.appendChild(blur);
 }
 
-// main workhorse function of the command function. searches cmdArray for aArrElem, and if found called func
-function searchCommandsFor( aArrElem, cmdArray, func )
+
+
+// Creates a Drop Down Box.  items are named using the following convention: <dropDownId>+Item+<Item Number>.  
+//     IE: drop-down list named dropDown, the first item would be dropDownItem1
+function createDropDownBox( dropDownId, titleArr )
 {
-    for( var index = 0; index < cmdArray.length; ++index )
-    {
-        if( cmdArray[index] == aArrElem)
-        {
-            return func();
-        }
-    }
-    return false;
+	var dropDown = document.createElement("select");
+	dropDown.id = dropDownId;
+	for( var ii = 0; ii < titleArr.length; ++ii )
+	{
+		var option = document.createElement("option");
+		option.id = dropDownId + "Item" + (ii+1);
+		option.setAttribute("value", titleArr[ii] );
+		option.innerHTML = titleArr[ii];
+		dropDown.appendChild( option );
+	}
+	_$(use_div_id).appendChild( dropDown );
 }
-
-
 
 // create a bullet list
 function createUnorderedList( divId, titleArr )
