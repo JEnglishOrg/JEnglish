@@ -347,20 +347,6 @@ function change_slide(myId, holderId)
 	_$('prev').setAttribute("onClick", "change_slide('"+prevSlideName+"', '"+holderId+"')" );
 	_$('next').setAttribute("onClick", "change_slide('"+nextSlideName+"', '"+holderId+"')" );
 }
-
-// going to use their domain.tld as the database name, and their table name as the table name for that database
-function createtable(tableName, tableFields, domain){
-    if(tableFields==null) {
-        record("<br /><span style='color:red'>ERROR: YOU MUST SPECIFY AT LEAST ONE FIELDS IN YOUR TABLE</span><br />");
-	 return false;
-    } else if( tableFields.match("id") ) {
-        record("<br /><span style='color:red'>ERROR: ID IS RESERVED, PLEASE CHOOSE ANOTHER NAME</span><br />");
-	 return false;
-    }
-    ajaxpostrequest2('http://jenglish.org/testdemo/create_table.php', 'table='+tableName+"&fields="+tableFields+"&domain="+domain, parseCreateTableResponse);
-    return true;
-}
-
 function parseCreateTableResponse(x) {
     if( x.indexOf('F') === 0 ){
         _$('save_output').value = "ERROR: CREATING TABLE";
@@ -429,8 +415,6 @@ var CREATE_BLUR_CMDS = new Array("blur");
 var CREATE_UL_CMDS = new Array("ul","bullet","bulletlist","unorderedlist");
 var CREATE_OL_CMDS = new Array("ol","numberlist","orderedList");
 var CREATE_SLIDESHOW_CMDS = new Array("slideshow");
-var CREATE_CONTACT_FORM_CMDS = new Array("contact", "contactus", "contactForm");
-var CREATE_TABLE_CMDS = new Array("table","database","db");//note: to the user database == table. we know better =D
 var CREATE_MENU_CMDS = new Array("menu","menubar","menuBar","navbar","navBar","navigationbar","navigationBar");
 var CREATE_MENU_DROP_DOWN_CMDS = new Array("drop-down","dropdown","submenu","hovermenu","hover-menu");
 var CREATE_VERT_BAR_CMDS = new Array("verticalBar","vertBar","vBar","vbar");
@@ -679,50 +663,6 @@ function createTextInput( formName, withName )
 	return input;
 }
 
-function createContactForm( formName, fieldsArr )
-{
-	var formElem = document.createElement("form");
-	formElem.id = formName;
-	formElem.setAttribute('method',"post");
-	formElem.setAttribute('action',"http://arnousedigitaldevices.com/newsite/mailTo.php");
-	formElem.style.position = "absolute";
-
-	var table = document.createElement("table");
-	table.id = formName + "_table";
-	var body = document.createElement("tbody");
-	for( var ii = 0; ii < fieldsArr.length; ++ii )
-	{
-		var f = fieldsArr[ii];
-		if( f == "name" || f == "email" ||  f == "phone" || f == "comment" ) 
-		{
-			var row = document.createElement("tr");
-			var inputName = document.createElement("td");
-
-			var input = createTextInput(formName, f);
-			f = f.charAt(0).toUpperCase() + f.slice(1);
-			inputName.innerHTML = f + ":";
-
-			var col2 = document.createElement("td");
-			col2.appendChild(input);
-
-			row.appendChild(inputName);
-			row.appendChild(col2);
-		}
-		else
-		{
-			record('<span style="color:red">UNKNOWN FORM FIELD NAMED = ' + f + '</span>');
-			return false;
-		}
-		body.appendChild(row);
-	}
-	table.appendChild(body);	
-	formElem.appendChild(table);
-
-	appendBox(formElem);
-
-	return true;
-}
-
 function createBlur( blurId )
 {
 	var blur = document.createElement('div');
@@ -737,7 +677,7 @@ function createBlur( blurId )
 	
 	var closeBlur = document.createElement('div');
 	closeBlur.id = blurId + "_close";
-	closeBlur.style.backgroundImage = "url('http://arnousedigitaldevices.com/newsite/images/close_button.png')";
+	closeBlur.style.backgroundImage = "url('/images/close_button.png')";
 	closeBlur.style.position = "absolute";
 	closeBlur.style.width = "50px";
 	closeBlur.style.height = "50px";
@@ -781,8 +721,6 @@ function c(x) {
 	var retVal2 = searchCommandsFor( arr[i+2], CREATE_SLIDESHOW_CMDS, function() 
 	{
 		// create a slideshow in/for imgId using images img1 img2 [and] img3
-		// create a slideshow using slideshowHolder using indicator indicatorHolder using description1 description2 description3 description4 using images http://jenglish.org/images/addc_logo_new.png http://jenglish.org/images/biodigital.png http://jenglish.org/images/comp1950s.png http://jenglish.org/images/comp2012.png
-
 		var divId = arr[i+4];
 		var indId = arr[i+7];
 		var numImages =( arr.length - 9 - 2);
@@ -862,40 +800,6 @@ function c(x) {
 	});
 	if( retVal2 == true ) { return true; }
 
-	// create a contactForm ? formName ? fields field1[, field2]+  mailTo emailToSend 
-	retVal2 = searchCommandsFor( arr[i+2], CREATE_CONTACT_FORM_CMDS, function() 
-	{
-		var formName = arr[i+4];
-		var fieldsIndex = x.indexOf(" fields ");
-		if( fieldsIndex == -1 )
-		{
-			record('<span style="color:red">ERROR PARSING contactForm COMMAND</span>');
-			return false;
-		}
-		
-		var fields = x.substring(fieldsIndex+8);
-
-		var fieldsToIncludeArr = new Array();
-		var fieldArr = fields.split(',');
-		for( var ii = 0; ii < fieldArr.length; ++ii )
-		{
-			var andIndex = fieldArr[ii].indexOf("and");
-			var fieldTitle = fieldArr[ii].trim();
-			if( andIndex != -1 )
-			{
-				fieldTitle = fieldTitle.substring( andIndex+3 ).trim();
-			}
-			fieldsToIncludeArr.push(fieldTitle);
-
-		}
-
-		record('making contact form named <span style="color:red">'+formName+'</span>');
-		return createContactForm(formName, fieldsToIncludeArr);
-
-	});
-	if( retVal2 == true ) { return true; }
-
-
 	retVal2 = searchCommandsFor( arr[i+2], CREATE_UL_CMDS, function()
 	{
 		// create a bulletlist in divId with titles title1, title2, and title3
@@ -951,35 +855,6 @@ function c(x) {
 	});
 	if( retVal2 == true ){ return true; }
 
-/*
-        // Check for Create Table/DB; eg: create table named poop <--- this gets created under domain.tld database, and is always just a table
-        retVal2 = searchCommandsFor( arrElem, CREATE_TABLE_CMDS, function()
-        {
-            // fields='id, name, price, quantity';
-            tableName = arr[j+1];
-            var fields = '';
-            for( var yy = j+4; yy<arr.length; ++yy)
-            { 
-                var tmp = arr[yy];
-                if( tmp=="and"){
-                    continue;
-                }
-                tmp = tmp.replace(',','');
-                fields += tmp + ",";  
-            }
-            // grab domain from SESSION data from LOGIN
-            if( createtable(tableName,fields,'loxsy.com') ) 
-            {
-                record("table <span style='color:red'>"+arr[j+1]+"</span> was created with fields:<span style='color:red'>"+fields+"</span>");
-            }
-            else
-            {
-                record("<span style='color:red'>ERROR: CREATING YOUR TABLE!</span>");
-            }
-            return true;
-        });
-        if( retVal2 == true ){return true;}
-*/
         // Check for Create Menu/NavBar; eg: create a menu X <menuName> X titles <MenuTitles>
         retVal2 = searchCommandsFor(arr[i+2], CREATE_MENU_CMDS, function()
         {
@@ -1548,12 +1423,6 @@ function c(x) {
 		record('created Open-Window to <span style="color:red">'+toWhom+'</span> onClick handler for <span style="color:red">'+divId+'</span>');
 		return true;
 	}
-	else if( doWhat == "mail" )
-	{
-		createOnClickSendForm( divId, toWhom, responseId );
-		record('created Send-Form to <span style="color:red">'+toWhom+'</span> onClick handler for <span style="color:red">'+divId+'</span>');
-		return true;
-	}
 	else 
 	{
 		record('<span style="color:red">UNABLE TO PARSE when COMMAND!</span>');
@@ -1834,74 +1703,7 @@ function createOnClickOpenPageHandler( divId, toWhere )
 		window.open( toWhere );
 	}
 }
-function createOnClickSendForm( divId, fromWhere, responseId )
-{
-	_$(divId).style.cursor = "pointer";
-	_$(divId).onclick = function()
-	{
-		var form = _$(fromWhere);
 
-		try { var name = _$(fromWhere+"_name").value; }catch(e){ name = ' '; }
-		try { var phone = _$(fromWhere+"_phone").value; }catch(e){ phone = ' '; }
-		try { var email = _$(fromWhere+"_email").value; }catch(e){ email = ' '; }
-		try { var comment = _$(fromWhere+"_comment").value; }catch(e){ comment = ' '; }
-		
-		var params = null;
-		if( name != null && name != '' )
-		{
-			params = 'name='+name;
-		}
-		if( phone != null && phone != '' )
-		{
-			if( params != null )
-			{
-				params += '&';
-			}
-			params += 'phone='+phone;
-		}
-		if( email != null && email != '' )
-		{
-			if( params != null )
-			{
-				params += '&';
-			}
-			params += 'email='+email;
-		}
-		if( comment != null && comment != '' )
-		{
-			if( params != null )
-			{
-				params += '&';
-			}
-			params += 'comment='+comment;
-		}
-		if( params == null )
-		{
-			return;
-		}
-		try { _$(fromWhere+"_name").value = ''; }catch(e){}
-		try { _$(fromWhere+"_email").value = ''; }catch(e){}
-		try { _$(fromWhere+"_phone").value = ''; }catch(e){}
-		try { _$(fromWhere+"_comment").value = ''; }catch(e){}
-
-		var request =  get_XmlHttp();// call the function for the XMLHttpRequest instance
-   		request.open("POST", "http://arnousedigitaldevices.com/newsite/mailTo.php", true);// set the request
-    	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		request.send(params);
-	    request.onreadystatechange = function() {
-		    if (request.readyState == 4) {
-				if( request.responseText == "yes" )
-				{
-					_$(responseId).innerHTML = "Comment Sent! Thank You!";
-				}
-				else
-				{
-					_$(responseId).innerHTML = "Unable to Send Comment!";
-				}
-			}
-		}
-	}
-}
 
 function createOnClickHandler( divId, doWhatArr, toWhomArr )
 {
@@ -1957,7 +1759,7 @@ function createSlideshow(divId, indId)
 
 		var activeImg = document.createElement('img');
 		activeImg.id = "active"+(index+1);
-		activeImg.src = "http://jenglish.org/images/green_circle.png";
+		activeImg.src = "/images/green_circle.png";
 		activeImg.style.opacity = 0.0;
 		activeImg.style.position = "absolute";
 		activeImg.style.left = "0px";
@@ -1966,7 +1768,7 @@ function createSlideshow(divId, indId)
 		activeImg.style.paddingRight = "10px";
 		var inactiveImg = document.createElement('img');
 		inactiveImg.id = "inactive"+(index+1);
-		inactiveImg.src = "http://jenglish.org/images/grey_circle.png";
+		inactiveImg.src = "/images/grey_circle.png";
 		inactiveImg.style.opacity = 1.0;
 		inactiveImg.style.position = "absolute";
 		inactiveImg.style.left = "0px";
