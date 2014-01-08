@@ -49,6 +49,7 @@ make <CSS-PROPERTY> <CSS-VALUE> [otherwise <CSS-PROPERTY> <CSS-VALUE>]
 
 
 COMMAND SYNTAX:
+------------------------------------------------------------------------
 You may enter 1 or more commands per line with or without: "..<SPACE>", at the end of the line.
 
 You MUST enter "..<SPACE>" between commands on the same line however.
