@@ -33,16 +33,16 @@ append &lt;TEXT|HTML&gt; into &lt;NAME&gt;
 
 WHEN
 ------------------------------------------------------------------------
-when &lt;NAME&gt; is &lt;clicked|hovered&gt; ...
-clicked:
-open &lt;URL&gt; - Opens the &lt;URL&gt; in a New Window
-goto &lt;URL&gt; - Opens the &lt;URL&gt; in the Same Window
-show &lt;NAME&gt; - Makes &lt;NAME&gt; visible to the user
-hide &lt;NAME&gt; - Makes &lt;NAME&gt; invisible to the user
-make &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; [otherwise &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt;]
-
-hovered:
-make &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; [otherwise &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt;]
+when &lt;NAME&gt; is &lt;clicked|hovered&gt; ...<BR>
+clicked:<BR>
+open &lt;URL&gt; - Opens the &lt;URL&gt; in a New Window<BR>
+goto &lt;URL&gt; - Opens the &lt;URL&gt; in the Same Window<BR>
+show &lt;NAME&gt; - Makes &lt;NAME&gt; visible to the user<BR>
+hide &lt;NAME&gt; - Makes &lt;NAME&gt; invisible to the user<BR>
+make &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; [otherwise &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt;]<BR>
+<BR>
+hovered:<BR>
+make &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; [otherwise &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt;]<BR>
 
 
 ========================================================================
