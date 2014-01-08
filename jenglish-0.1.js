@@ -419,7 +419,7 @@ var CREATE_MENU_CMDS = new Array("menu","menubar","menuBar","navbar","navBar","n
 var CREATE_MENU_DROP_DOWN_CMDS = new Array("drop-down","dropdown","submenu","hovermenu","hover-menu");
 var CREATE_VERT_BAR_CMDS = new Array("verticalBar","vertBar","vBar","vbar");
 var CREATE_HORZ_BAR_CMDS = new Array("horizontalBar","horzBar","hBar","hbar","bar");
-var AJAX_CMDS   = new Array("async",'ajax','asynchronously');
+var AJAX_CMDS   = new Array("async","ajax","asynchronously");
 var APPEND_ELEM_CMDS = new Array("append-elem");
 var ATTR_CMDS   = new Array("make","set");
 var DELETE_CMDS = new Array("remove","delete","rm");
@@ -428,12 +428,8 @@ var EMBED_SUB_CMDS = new Array("youtube","video");
 var INSERT_CMDS = new Array("put","insert");
 var APPEND_INSERT_CMDS = new Array("append");
 var MOVE_CMDS   = new Array("move","shift","mymove"); 
-var PREPEND_CMDS = new Array("prepend");
-var RENAME_CMDS = new Array("rename");
 var USE_CMDS = new Array("use", "using");
 var WHEN_CMDS = new Array("when");
-
-
 
 function insertText(x)
 {
@@ -446,7 +442,6 @@ function insertText(x)
     }
     record("<span style='color:red'>"+k+"</span> put into <span style='color:red'>"+boxName+"</span>");
 }
-
 
 function removeItem(array, item){
     for(var i in array)
@@ -461,7 +456,7 @@ function removeItem(array, item){
 
 function removeSavedVar(v){
     var varType = _$(v).tagName.toLowerCase();
-    if( varType =="div")
+    if( varType == "div" )
     {
         removeItem(divArray, _$(v).id);
     }
@@ -474,7 +469,6 @@ function removeSavedVar(v){
         alert("I don't know how to remove the type " + varType + ". SORRY! Maybe I need an update!" );
     }
 }
-
 
 function deleteElem(x) {
     var yy = _$(x);
@@ -526,10 +520,6 @@ function findParentNode(e){
     }
 }
 
-
-
-var appendToDiv = 'center';
-
 function createembeddedvideo(vidId, fullUrl){
     var vid = document.createElement('iframe');
     vid.setAttribute("id",vidId);
@@ -575,7 +565,7 @@ function createembeddedlargeplayer(vidId, fullUrl)
 
 function createmenudropdown(menuName, menuTitle, numElems, subMenuTitles){
 	var menu = _$(menuName);
-	if( menu == null){ console.log("cannot find that a menu named "+menuName+" = " + x); return false;}
+	if( menu == null){ console.log("cannot find that a menu named "+menuName); return false;}
 	var menuTitles = menu.children;
 	var menuItem = null;
 	var parent = -1;
@@ -590,21 +580,20 @@ function createmenudropdown(menuName, menuTitle, numElems, subMenuTitles){
 	}
 	if(menuItem==null)
 	{
-	console.log("cannot find the menu item = " + menuItem);
+		console.log("cannot find the menu item = " + menuItem);
 		record("<span style='color:red'>ERROR: CANNOT FIND THAT MENU TITLE IN YOUR MENU!</span>");
 		return false;
 	}
 
 	var dropDownMenu = document.createElement('div');
-	dropDownMenu.setAttribute('id', menuItem.id+'DropDown');
-
+	dropDownMenu.id = menuItem.id+'DropDown';
 	dropDownMenu.style.position = "absolute";
 	dropDownMenu.style.top = parseInt(menuItem.offsetTop) + parseInt(menuItem.style.height);
 	dropDownMenu.style.left = parseInt(menuItem.offsetLeft) + "px";
 	dropDownMenu.style.display = "none";
 	dropDownMenu.style.backgroundColor = "white";
 	dropDownMenu.style.zIndex = 8;
-	dropDownMenu.style.padding = "5px";
+	dropDownMenu.style.padding = "0px 5px 5px 3px";
 	for( var ii = 0; ii < numElems; ++ii )
 	{
 		var dropDownItem = document.createElement('div');
@@ -842,14 +831,17 @@ function c(x) {
 				return false;
 			}
 			var firstTitle = rawQuerySplit[0].substring( titlesIndex+6 ).trim();
+			console.log("content = " + firstTitle );
 			titleArr.push( firstTitle );
 		}
 
 		for( var ii = 1; ii < rawQuerySplit.length; ++ii ) {
 			var content = rawQuerySplit[ii].trim();
 			if( content == '' ) { continue; }
+			console.log("content = " + content );
 			titleArr.push( content );
-		}		createOrderedList( divName, titleArr );
+		}		
+		createOrderedList( divName, titleArr );
 		return true;
 
 	});
@@ -889,13 +881,26 @@ function c(x) {
         });
         if(retVal2){return true;}
 
-        // create a dropdown ? menuTitle ? menuName ? ? X1 X2 XN
+        // create a dropdown for titleName in menuName with titles X1 [X2 XN]
         retVal2 = searchCommandsFor(arr[i+2], CREATE_MENU_DROP_DOWN_CMDS, function()
         {
-		titleName = arr[i+4];
-		menuName = arr[i+6];
+		var forIdx = x.indexOf(" for ");
+		var inIdx = x.indexOf(" in ");
+		if( forIdx == -1 || inIdx == -1 )
+		{
+			console.log("JEnglish: UNABLE TO PARSE DROP-DOWN MENU COMMAND = " + x );
+			return true;
+		}
+		var titleName = x.substring( forIdx+5, inIdx );
+		
+		var withIdx = x.indexOf(" with ");
+		if( withIdx == -1 )
+		{
+			console.log("JEnglish: UNABLE TO PARSE DROP-DOWN MENU COMMAND = " + x );
+			return true;
+		}
+		var menuName = x.substring( inIdx+4, withIdx );
 		var titlesArr = new Array();
-
 	    var titlesIndex = x.indexOf('titles');
 	    if( titlesIndex == -1 )
 	    {
@@ -1145,15 +1150,6 @@ function c(x) {
         return true;
     });
     if( retVal == true ){return true;}
-
-    // Check for Rename. rename oldDivName newDivName
-    retVal = searchCommandsFor( arrElem, RENAME_CMDS, function()
-    {
-        _$(arr[i+1]).setAttribute('id', arr[i+2]);
-        record("<span style='color:red'>"+arr[i+1]+"</span> renamed into <span style='color:red'>"+arr[i+2]+"</span>");
-        return true;
-    });
-    if(retVal==true){return true;}
 
 	retVal = searchCommandsFor( arrElem, APPEND_INSERT_CMDS, function()
 	{
@@ -1740,7 +1736,7 @@ function createSlideshow(divId, indId)
 	{
 		var imgHolder = document.createElement('img');
 		imgHolder.src = slideshowImgArr[ii];
-		imgHolder.id = 'img' + parseInt(ii+1);
+		imgHolder.id = divId+'_img' + parseInt(ii+1);
 		imgHolder.style.width = "100%";
 		if( ii != 0 ) {
 			imgHolder.style.opacity = 0.0;
@@ -1836,21 +1832,15 @@ function switchSource( holderId, indId)
 	// Switch the images
 	if( oldNum != -1 )
 	{
-//		holderId.childNodes[oldNum].canSwitch = true;
-//		holderId.childNodes[current_image].canSwitch = true;
 		fadeFromTo( holderId.childNodes[oldNum].id, holderId.childNodes[current_image].id );
 	}
 	// make the last indicator inactive
 	if( oldNum != -1 )
 	{
-//		indId.childNodes[oldNum].childNodes[0].canSwitch = true;
-//		indId.childNodes[oldNum].childNodes[1].canSwitch = true;
 		fadeFromTo( indId.childNodes[oldNum].childNodes[0].id, indId.childNodes[oldNum].childNodes[1].id );
 		// make the last description hidden
 		_$(slideshowDivArr[oldNum]).style.display = "none";
 	}
-//	indId.childNodes[current_image].childNodes[1].canSwitch = true;
-//	indId.childNodes[current_image].childNodes[0].canSwitch = true;
 	// make the next one active
 	fadeFromTo( indId.childNodes[current_image].childNodes[1].id, indId.childNodes[current_image].childNodes[0].id );
 	// Switch to the new description
@@ -1865,8 +1855,6 @@ function fadeFromTo(img1, img2)
 	fade( img1, 100, 0, 1 );
 	fade( img2, 0, 100, 1 );
 }
-
-
 
 function switchSourceTo( holderId, indId, toNum )
 {
