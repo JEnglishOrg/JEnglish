@@ -6,7 +6,6 @@ Recent Updates:
 	Base Code now At Version: jenglish-1.0.js
 
 
-
 This Version Has the following Commands Pre-Defined:
 
 CREATE
@@ -15,34 +14,35 @@ create a &lt;box|img|style|numberlist|bulletlist|HTML-TAG-NAME&gt; named &lt;NAM
 
 MAKE
 ------------------------------------------------------------------------
-make <NAME>['s] <CSS-PROPERTY> <CSS-VALUE> [and <CSS-PROPERTY> <CSS-VALUE> ...]
+make &lt;NAME&gt;[\'s] &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; [and &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; ...]
 
 MOVE
 ------------------------------------------------------------------------
-move <NAME> <left|right|up|down> <UNIT-VALUE> [and to the <right|left|up|down> <UNIT-VALUE>]
+move &lt;NAME&gt; &lt;left|right|up|down&gt; &lt;UNIT-VALUE&gt; [and to the &lt;right|left|up|down&gt; &lt;UNIT-VALUE&gt;]
 
-This is the most flexible just make sure it follows <MOVE-DIR> <UNIT-VALUE>, one after the other.
-You may specify: <left> or <right> and/or <up> or <down>
+This is the most flexible just make sure it follows &lt;MOVE-DIR&gt; &lt;UNIT-VALUE&gt;, one after the other.
+You may specify: &lt;left&gt; or &lt;right&gt; and/or &lt;up&gt; or &lt;down&gt;
 
 INSERT
 ------------------------------------------------------------------------
-insert <TEXT|HTML> into <NAME>
+insert &lt;TEXT|HTML&gt; into &lt;NAME&gt;
 
 APPEND
 ------------------------------------------------------------------------
-append <TEXT|HTML> into <NAME>
+append &lt;TEXT|HTML&gt; into &lt;NAME&gt;
 
 WHEN
 ------------------------------------------------------------------------
-when <NAME> is <clicked|hovered> ...
+when &lt;NAME&gt; is &lt;clicked|hovered&gt; ...
 clicked:
-open <URL> - Opens the <URL> in a New Window
-goto <URL> - Opens the <URL> in the Same Window
-show <NAME> - Makes <NAME> visible to the user
-hide <NAME> - Makes <NAME> invisible to the user
+open &lt;URL&gt; - Opens the &lt;URL&gt; in a New Window
+goto &lt;URL&gt; - Opens the &lt;URL&gt; in the Same Window
+show &lt;NAME&gt; - Makes &lt;NAME&gt; visible to the user
+hide &lt;NAME&gt; - Makes &lt;NAME&gt; invisible to the user
+make &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; [otherwise &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt;]
 
 hovered:
-make <CSS-PROPERTY> <CSS-VALUE> [otherwise <CSS-PROPERTY> <CSS-VALUE>]
+make &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; [otherwise &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt;]
 
 
 ========================================================================
