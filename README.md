@@ -14,7 +14,7 @@ create a &lt;box|img|style|numberlist|bulletlist|HTML-TAG-NAME&gt; named &lt;NAM
 
 MAKE
 ------------------------------------------------------------------------
-make &lt;NAME&gt;[\'s] &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; [and &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; ...]
+make &lt;NAME&gt;['s] &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; [and &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; ...]
 
 MOVE
 ------------------------------------------------------------------------
