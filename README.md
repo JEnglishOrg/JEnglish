@@ -11,7 +11,7 @@ This Version Has the following Commands Pre-Defined:
 
 CREATE
 ------------------------------------------------------------------------
-create a <box|img|style|numberlist|bulletlist|HTML-TAG-NAME> named <NAME>
+create a &lt;box|img|style|numberlist|bulletlist|HTML-TAG-NAME&gt; named &lt;NAME&gt;
 
 MAKE
 ------------------------------------------------------------------------
