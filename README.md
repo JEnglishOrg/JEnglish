@@ -50,6 +50,22 @@ make &lt;CSS-PROPERTY&gt; &lt;CSS-VALUE&gt; [otherwise &lt;CSS-PROPERTY&gt; &lt;
 
 COMMAND SYNTAX:
 ------------------------------------------------------------------------
-You may enter 1 or more commands per line with or without: "..<SPACE>", at the end of the line.
+You may enter 1 or more commands per line with or without: "..&nbsp;", at the end of the line.
 
-You MUST enter "..<SPACE>" between commands on the same line however.
+You MUST enter "..&nbsp;" between commands on the same line however.
+
+
+
+LICENSE: (See: LICENSE in the root of this repo)
+------------------------------------------------------------------------
+Copyright © 2014 Arnouse Digital Device Corp. 
+Licensed under the Creative Commons Attribution-NonCommercial 4.0 International Public License (“Public License”); you may not use this file except in compliance with the Public License. You may obtain a copy of the Public License at
+http://creativecommons.org/licenses/by-nc/4.0/legalcode
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
