@@ -32,18 +32,13 @@ function warn(x)
 	}catch(e){ }
 }
 
-
 var c = {
 	'create_params': "3",
 	'create_order': "2,4,5*",
+	'create_exts': [],
 	'create': function(x,y,z){
 				y = y.toLowerCase();
 				var domElem = $_(y);
-				if( domElem !== undefined && domElem != null )
-				{
-					log("An Element with id = |"+y+"| has already been created. Please use a different Element ID");
-					return false;
-				}
 				
 				var insertId = "body";
 				if( z !== undefined && z !== null )
@@ -122,7 +117,23 @@ var c = {
 							$_(insertId).appendChild(h);
 						}
 						break;
-						
+					case "link":
+					case "hyperlink":
+					case "a":
+						var a = create_elem_id("a", y);
+						if( a === undefined || a == null )
+						{
+							return false;
+						}
+						if( insertId === "body" )
+						{
+							document.body.appendChild(a);
+						}
+						else
+						{
+							$_(insertId).appendChild(a);
+						}
+						break;
 					case "img":
 					case "image":
 						var i = create_elem_id("img", y);
@@ -237,7 +248,7 @@ var c = {
 							$_(insertId).appendChild(v);
 						}
 						break;
-
+					
 					default:
 						try{
 							var v = create_elem_id(x.toLowerCase(), y);
@@ -254,7 +265,6 @@ var c = {
 								$_(insertId).appendChild(v);
 							}
 						}catch(e){
-							log("Unknown object |" + x + "| in create cmd"); 
 							return false;
 						}						
 				}
@@ -380,6 +390,7 @@ var c = {
 
 	make_params: "2",
 	make_order: "1,2*",
+	make_exts: [],
 	make: 	function(x,y){ 
 				x = x.toLowerCase();
 				if( x.indexOf("'s") != -1 || x.indexOf("'S") != -1 )
@@ -496,6 +507,7 @@ var c = {
 			},
 	insert_params: "1",
 	insert_order: "1*",
+	insert_exts: [],
 	insert: function(x)
 			{
 				var xSplit = x.trim().split(" ");
@@ -523,6 +535,7 @@ var c = {
 
 	append_params: "1",
 	append_order: "1*",
+	append_exts: [],
 	append: function(x)
 			{
 				var xSplit = x.split(" ");
@@ -549,6 +562,7 @@ var c = {
 	
 	move_params: "2",
 	move_order: "1,2*",
+	move_exts: [],
 	move: function(x,y) {
 		x = x.toLowerCase();
 		var elem = $_(x);
@@ -762,6 +776,7 @@ var c = {
 	},
 	when_params:"2",
 	when_order:"1,2*",
+	when_exts: [],
 	when:	function(x,y) {
 		try{
 			x = x.toLowerCase();
@@ -931,12 +946,21 @@ function cmd(cmd)
 		{
 			if( cmds[ii].length > 0 )
 			{
+				
+				if( cmds[ii].substring( cmds[ii].length - 2 ) == "..")
+				{
+					cmds[ii] = cmds[ii].substring( 0, cmds[ii].length -2);
+				}
 				i(cmds[ii]);
 			}
 		}
 	}
-	else
+	else 
 	{
+		if( cmd.substring( cmd.length - 2 ) == "..")
+		{
+			cmd = cmd.substring( 0, cmd.length -2);
+		}
 		i(cmd);
 	}
 }
@@ -1007,6 +1031,7 @@ function i(cmd)
 			cmdArr = tmp;
 		}
 		var func = "c[ '" + cmdArr[0] + "' ]( ";
+		var params = '';
 		for( var ii = 0; ii < paramCt; ++ii )
 		{
 			var paramIdx = cmdParamIdx[ii];
@@ -1015,18 +1040,51 @@ function i(cmd)
 				paramIdx = paramIdx.substring(0,paramIdx.length-1);
 			}
 			
-			func += "cmdArr[ " + paramIdx + " ]";
+			params += "cmdArr[ " + paramIdx + " ]";
 			
 			if( paramCt > 1 && ii <  paramCt-1 )
 			{
-				func += ', ';
+				params += ', ';
 			}
 		}
-		func += " );";
+		func += params + " );";
 		eval( func );
+		
+		// Run the Extensions of the Base Commands
+		if( c[cmdArr[0]+'_exts'] == undefined || c[cmdArr[0]+'_exts'] == '' )
+		{
+			return;
+		}
+		else if( ! (c[cmdArr[0]+'_exts'] instanceof Array) )
+		{
+			log("I: Extension of an Object should define an Array, even if there is only 1 variable");
+			return;
+		}
+		
+		if( c[cmdArr[0]+'_exts'] instanceof Array )
+		{
+			if( c[cmdArr[0]+'_exts'].length > 0 )
+			{
+				for( var ii = 0; ii < c[cmdArr[0]+'_exts'].length; ++ii )
+				{
+					func = 'c["'+cmdArr[0]+'_exts"]['+ii+']('+params+');';
+					try{
+						eval(func);
+					}catch(e)
+					{
+						log("I: ERROR: Cannot run Extension for command = |"+cmdArr[0]+"| : " + e);
+					}
+				}
+			}
+		}
+		
+		
+		
+		
+		
 	}
 	catch(e)
 	{
-		log("ERROR: Cmd - interpreting: |" + cmd + "| for reason = " + e);
+		log("ERROR: Cmd - interpreting: |" + cmd + "| for reason = " + e );
 	}
 }
