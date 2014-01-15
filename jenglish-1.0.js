@@ -31,14 +31,29 @@ function warn(x)
 		}
 	}catch(e){ }
 }
+var imageCount = 0; // counts how many images we have to load up.
+var imageClickHandlers = []; // holds image ids, and their click handlers
 
+function applyImageClickHandlers()
+{
+	var next;
+	for( var ii = 0; ii < imageClickHandlers.length; ++ii )
+	{
+		next = imageClickHandlers[ii];
+		$_(next.id).onclick = next.func;
+	}
+}
 var c = {
 	'create_params': "3",
 	'create_order': "2,4,5*",
-	'create_exts': [],
 	'create': function(x,y,z){
 				y = y.toLowerCase();
 				var domElem = $_(y);
+				if( domElem !== undefined && domElem != null )
+				{
+					log("An Element with id = |"+y+"| has already been created. Please use a different Element ID");
+					return false;
+				}
 				
 				var insertId = "body";
 				if( z !== undefined && z !== null )
@@ -136,11 +151,19 @@ var c = {
 						break;
 					case "img":
 					case "image":
+						imageCount++;
 						var i = create_elem_id("img", y);
 						if( i === undefined || i == null )
 						{
 							return false;
 						}
+						i.onload = function() {
+							imageCount--;
+							if( imageCount == 0 )
+							{
+								applyImageClickHandlers();
+							}
+						};
 						if( insertId === "body" )
 						{
 							document.body.appendChild(i);
@@ -248,7 +271,7 @@ var c = {
 							$_(insertId).appendChild(v);
 						}
 						break;
-					
+
 					default:
 						try{
 							var v = create_elem_id(x.toLowerCase(), y);
@@ -265,6 +288,7 @@ var c = {
 								$_(insertId).appendChild(v);
 							}
 						}catch(e){
+							log("Unknown object |" + x + "| in create cmd"); 
 							return false;
 						}						
 				}
@@ -310,7 +334,7 @@ var c = {
 						{
 							this.parentNode.style.display = "none";
 						}
-					}
+					};
 					// Change these to change the 
 					close.src = "http://jenglish.org/images/close_button.png";
 					close.style.width = "50px";
@@ -390,7 +414,6 @@ var c = {
 
 	make_params: "2",
 	make_order: "1,2*",
-	make_exts: [],
 	make: 	function(x,y){ 
 				x = x.toLowerCase();
 				if( x.indexOf("'s") != -1 || x.indexOf("'S") != -1 )
@@ -507,7 +530,6 @@ var c = {
 			},
 	insert_params: "1",
 	insert_order: "1*",
-	insert_exts: [],
 	insert: function(x)
 			{
 				var xSplit = x.trim().split(" ");
@@ -535,7 +557,6 @@ var c = {
 
 	append_params: "1",
 	append_order: "1*",
-	append_exts: [],
 	append: function(x)
 			{
 				var xSplit = x.split(" ");
@@ -562,7 +583,6 @@ var c = {
 	
 	move_params: "2",
 	move_order: "1,2*",
-	move_exts: [],
 	move: function(x,y) {
 		x = x.toLowerCase();
 		var elem = $_(x);
@@ -776,15 +796,19 @@ var c = {
 	},
 	when_params:"2",
 	when_order:"1,2*",
-	when_exts: [],
 	when:	function(x,y) {
 		try{
 			x = x.toLowerCase();
-			if( x.indexOf("'s") != -1 || x.indexOf("'S") != -1 )
+			if( x.indexOf("'s") != -1 )
 			{
 				x = x.substring(0,x.length-2);
 			}
 			var box = $_(x);
+			if( box == undefined || box == null )
+			{
+				log("ERROR: When - The Box |"+x+"| was not found. Please create the box first.");
+				return false;
+			}
 		}catch(e)
 		{
 			log("ERROR: When - The Box |"+x+"| was not found. Please create the box first.");
@@ -813,16 +837,51 @@ var c = {
 				{
 					case "open":
 						box.style.cursor = "pointer";
-						box.onclick = function()
+						if( box.tagName.toUpperCase() == "IMG")
 						{
-							window.open(param);
+							if( imageCount == 0 )
+							{
+								box.onclick = function()
+								{
+									window.open(param);
+								};
+							}
+							else
+							{
+								imageClickHandlers.push( { id: box.id, func: function() { window.open(param); } } );
+							}
 						}
+						else
+						{
+							box.onclick = function()
+							{
+								window.open(param);
+							};
+						}
+						
 						break;
 					case "goto":
 						box.style.cursor = "pointer";
-						box.onclick = function()
+						if( box.tagName.toUpperCase() == "IMG")
 						{
-							window.location.assign(param);
+							if( imageCount == 0 )
+							{
+								box.onclick = function()
+								{
+									window.location.assign(param);
+								};
+							}
+							else
+							{
+								imageClickHandlers.push( { id: box.id, func: function() { window.location.assign(param); } } );
+							}
+						}
+						else
+						{
+							box.onclick = function()
+							{
+								window.location.assign(param);
+							};
 						}
 						break;
 					case "show":
@@ -830,14 +889,14 @@ var c = {
 						box.onclick = function()
 						{
 							$_(param).style.display = "block";
-						}
+						};
 						break;
 					case "hide":
 						box.style.cursor = "pointer";
 						box.onclick = function()
 						{
 							$_(param).style.display = "none";
-						}
+						};
 						break;
 					default:
 						log("ERROR: When - Unknown sub command action = |"+subCmdAction+"|");
@@ -852,7 +911,7 @@ var c = {
 						{
 							box.onmouseover = function() {
 								c['make'](x, param);
-							}
+							};
 						}
 						else
 						{
@@ -870,10 +929,10 @@ var c = {
 							}
 							box.onmouseover = function() {
 								c['make'](x, mouseOver);
-							}
+							};
 							box.onmouseout = function() {
 								c['make'](x, mouseOut);
-							}
+							};
 						}
 						break;
 					default:
@@ -1031,7 +1090,6 @@ function i(cmd)
 			cmdArr = tmp;
 		}
 		var func = "c[ '" + cmdArr[0] + "' ]( ";
-		var params = '';
 		for( var ii = 0; ii < paramCt; ++ii )
 		{
 			var paramIdx = cmdParamIdx[ii];
@@ -1040,51 +1098,18 @@ function i(cmd)
 				paramIdx = paramIdx.substring(0,paramIdx.length-1);
 			}
 			
-			params += "cmdArr[ " + paramIdx + " ]";
+			func += "cmdArr[ " + paramIdx + " ]";
 			
 			if( paramCt > 1 && ii <  paramCt-1 )
 			{
-				params += ', ';
+				func += ', ';
 			}
 		}
-		func += params + " );";
+		func += " );";
 		eval( func );
-		
-		// Run the Extensions of the Base Commands
-		if( c[cmdArr[0]+'_exts'] == undefined || c[cmdArr[0]+'_exts'] == '' )
-		{
-			return;
-		}
-		else if( ! (c[cmdArr[0]+'_exts'] instanceof Array) )
-		{
-			log("I: Extension of an Object should define an Array, even if there is only 1 variable");
-			return;
-		}
-		
-		if( c[cmdArr[0]+'_exts'] instanceof Array )
-		{
-			if( c[cmdArr[0]+'_exts'].length > 0 )
-			{
-				for( var ii = 0; ii < c[cmdArr[0]+'_exts'].length; ++ii )
-				{
-					func = 'c["'+cmdArr[0]+'_exts"]['+ii+']('+params+');';
-					try{
-						eval(func);
-					}catch(e)
-					{
-						log("I: ERROR: Cannot run Extension for command = |"+cmdArr[0]+"| : " + e);
-					}
-				}
-			}
-		}
-		
-		
-		
-		
-		
 	}
 	catch(e)
 	{
-		log("ERROR: Cmd - interpreting: |" + cmd + "| for reason = " + e );
+		log("ERROR: Cmd - interpreting: |" + cmd + "| for reason = " + e);
 	}
 }
