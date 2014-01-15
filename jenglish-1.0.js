@@ -711,8 +711,8 @@ var c = {
 			}
 		}
 
-		var lrDist = -1;
-		var udDist = -1;
+		var lrDist = "-1";
+		var udDist = "-1";
 		
 		if( leftDist != -1 )
 		{
