@@ -31,6 +31,19 @@ function warn(x)
 		}
 	}catch(e){ }
 }
+var imageCount = 0; // counts how many images we have to load up.
+var imageClickHandlers = []; // holds image ids, and their click handlers
+
+function applyImageClickHandlers()
+{
+	var next;
+	for( var ii = 0; ii < imageClickHandlers.length; ++ii )
+	{
+		next = imageClickHandlers[ii];
+		$_(next.id).onclick = next.func;
+	}
+}
+
 
 var c = {
 	'create_params': "3",
@@ -136,11 +149,21 @@ var c = {
 						break;
 					case "img":
 					case "image":
+						
 						var i = create_elem_id("img", y);
 						if( i === undefined || i == null )
 						{
 							return false;
 						}
+						imageCount++;
+						i.onload = function() {
+							imageCount--;
+							if( imageCount == 0 )
+							{
+								applyImageClickHandlers();
+							}
+						};
+
 						if( insertId === "body" )
 						{
 							document.body.appendChild(i);
@@ -310,7 +333,7 @@ var c = {
 						{
 							this.parentNode.style.display = "none";
 						}
-					}
+					};
 					// Change these to change the 
 					close.src = "http://jenglish.org/images/close_button.png";
 					close.style.width = "50px";
@@ -691,8 +714,8 @@ var c = {
 			}
 		}
 
-		var lrDist = -1;
-		var udDist = -1;
+		var lrDist = "-1";
+		var udDist = "-1";
 		
 		if( leftDist != -1 )
 		{
@@ -780,7 +803,7 @@ var c = {
 	when:	function(x,y) {
 		try{
 			x = x.toLowerCase();
-			if( x.indexOf("'s") != -1 || x.indexOf("'S") != -1 )
+			if( x.indexOf("'s") != -1 )
 			{
 				x = x.substring(0,x.length-2);
 			}
@@ -813,16 +836,50 @@ var c = {
 				{
 					case "open":
 						box.style.cursor = "pointer";
-						box.onclick = function()
+						if( box.tagName.toUpperCase() == "IMG")
 						{
-							window.open(param);
+							if( imageCount == 0 )
+							{
+								box.onclick = function()
+								{
+									window.open(param);
+								};
+							}
+							else
+							{
+								imageClickHandlers.push( { id: box.id, func: function() { window.open(param); } } );
+							}
 						}
+						else
+						{
+							box.onclick = function()
+							{
+								window.open(param);
+							};
+						}						
 						break;
 					case "goto":
 						box.style.cursor = "pointer";
-						box.onclick = function()
+						if( box.tagName.toUpperCase() == "IMG")
 						{
-							window.location.assign(param);
+							if( imageCount == 0 )
+							{
+								box.onclick = function()
+								{
+									window.location.assign(param);
+								};
+							}
+							else
+							{
+								imageClickHandlers.push( { id: box.id, func: function() {window.location.assign(param); } } );
+							}
+						}
+						else
+						{
+							box.onclick = function()
+							{
+								window.location.assign(param);
+							};
 						}
 						break;
 					case "show":
@@ -830,14 +887,14 @@ var c = {
 						box.onclick = function()
 						{
 							$_(param).style.display = "block";
-						}
+						};
 						break;
 					case "hide":
 						box.style.cursor = "pointer";
 						box.onclick = function()
 						{
 							$_(param).style.display = "none";
-						}
+						};
 						break;
 					default:
 						log("ERROR: When - Unknown sub command action = |"+subCmdAction+"|");
@@ -852,7 +909,7 @@ var c = {
 						{
 							box.onmouseover = function() {
 								c['make'](x, param);
-							}
+							};
 						}
 						else
 						{
@@ -870,10 +927,10 @@ var c = {
 							}
 							box.onmouseover = function() {
 								c['make'](x, mouseOver);
-							}
+							};
 							box.onmouseout = function() {
 								c['make'](x, mouseOut);
-							}
+							};
 						}
 						break;
 					default:
