@@ -149,7 +149,6 @@ var c = {
 						break;
 					case "img":
 					case "image":
-						
 						var i = create_elem_id("img", y);
 						if( i === undefined || i == null )
 						{
@@ -884,10 +883,57 @@ var c = {
 						break;
 					case "show":
 						box.style.cursor = "pointer";
-						box.onclick = function()
+						if( param == "fullscreen" )
 						{
-							$_(param).style.display = "block";
-						};
+							var fullscreenBlur = $_('fullscreenBlur');
+							if( fullscreenBlur == undefined || fullscreenBlur == null )
+							{
+								var fullscreenBlur = create_elem_id("div", "fullscreenBlur");
+								fullscreenBlur.style.position = "fixed";
+								fullscreenBlur.style.width = "100%";
+								fullscreenBlur.style.height = "100%";
+								fullscreenBlur.style.background = "rgba(0,0,0,0.95)";
+								fullscreenBlur.style.zIndex = "100000";
+								fullscreenBlur.style.visibility = "hidden";
+								
+								
+								var closeBut = create_elem_id("img", "close_fullscreenBlur");
+								closeBut.src = "http://jenglish.org/assets/imgs/close_button.png";
+								closeBut.style.position = "absolute";
+								closeBut.style.top = "20px";
+								closeBut.style.left = "calc(100% - 70px)";
+								closeBut.style.zIndex = "100001";
+								closeBut.style.cursor = "pointer";
+								closeBut.onclick = function() {
+									$_('fullscreenimg').style.backgroundImage = "";
+									$_('fullscreenblur').style.visibility = "hidden";
+								};
+								fullscreenBlur.appendChild(closeBut);
+
+								var fullscreenImg = create_elem_id("div", "fullscreenImg");
+								fullscreenImg.style.height = "100%";
+								fullscreenImg.style.width = "100%";
+								fullscreenImg.style.backgroundSize = "contain";
+								fullscreenImg.style.backgroundRepeat = "no-repeat";
+								fullscreenImg.style.backgroundPosition = "center";
+								
+
+								fullscreenBlur.appendChild(fullscreenImg);
+								document.body.appendChild(fullscreenBlur);
+							}
+							box.onclick = function()
+							{
+								$_('fullscreenimg').style.backgroundImage = "url('"+this.src+"')";
+								$_('fullscreenblur').style.visibility = "visible";
+							};
+						}
+						else
+						{
+							box.onclick = function()
+							{
+								$_(param).style.display = "block";
+							};
+						}
 						break;
 					case "hide":
 						box.style.cursor = "pointer";
@@ -995,7 +1041,10 @@ function cmd(cmd)
 	{
 		return;
 	}
-	
+	if( cmd.indexOf('...') != -1 )
+	{
+		cmd = cmd.replace('...', '~~~');
+	}
 	if( cmd.indexOf('.. ') != -1 )
 	{
 		var cmds = cmd.split(".. ");
@@ -1003,11 +1052,11 @@ function cmd(cmd)
 		{
 			if( cmds[ii].length > 0 )
 			{
-				
 				if( cmds[ii].substring( cmds[ii].length - 2 ) == "..")
 				{
 					cmds[ii] = cmds[ii].substring( 0, cmds[ii].length -2);
 				}
+				cmds[ii] = cmds[ii].replace('~~~', '...');
 				i(cmds[ii]);
 			}
 		}
@@ -1018,6 +1067,7 @@ function cmd(cmd)
 		{
 			cmd = cmd.substring( 0, cmd.length -2);
 		}
+		cmd = cmd.replace('~~~', '...');
 		i(cmd);
 	}
 }
