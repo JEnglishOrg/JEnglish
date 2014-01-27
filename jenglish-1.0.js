@@ -1043,7 +1043,7 @@ function cmd(cmd)
 	}
 	if( cmd.indexOf('...') != -1 )
 	{
-		cmd = cmd.replace('...', '~~~');
+		cmd = cmd.replace(/\.\.\./g, '~~~');
 	}
 	if( cmd.indexOf('.. ') != -1 )
 	{
@@ -1056,7 +1056,7 @@ function cmd(cmd)
 				{
 					cmds[ii] = cmds[ii].substring( 0, cmds[ii].length -2);
 				}
-				cmds[ii] = cmds[ii].replace('~~~', '...');
+				cmds[ii] = cmds[ii].replace(/\~\~\~/g, '...');
 				i(cmds[ii]);
 			}
 		}
@@ -1067,7 +1067,7 @@ function cmd(cmd)
 		{
 			cmd = cmd.substring( 0, cmd.length -2);
 		}
-		cmd = cmd.replace('~~~', '...');
+		cmd = cmd.replace(/\~\~\~/g, '...');
 		i(cmd);
 	}
 }
